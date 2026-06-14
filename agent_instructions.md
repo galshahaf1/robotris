@@ -24,7 +24,7 @@ The local environment is a Windows machine running PowerShell. Due to system-wid
 ## 2. Mandatory Workflow Rules
 
 1. **Auto Commit & Push**: You are **required** to commit and push all code changes to GitHub at the end of every task or feature addition.
-2. **Modular C++ Structure**: Keep the Arduino code modularized inside `Wing_Motion_V6_Tuning/`. Do not consolidate it into a single huge `.ino` file. All equations must be stored in `Motions.cpp`, configurations in `Config.h`, and communication logic in `SerialHandler.cpp`.
+2. **Modular C++ Structure**: Keep the Arduino code modularized inside `Wing_Motion_Arduino/`. Do not consolidate it into a single huge `.ino` file. All equations must be stored in `Motions.cpp`, configurations in `Config.h`, and communication logic in `SerialHandler.cpp`.
 3. **No Redundant UI Buttons**: The GUI sliders update parameters dynamically on drag. Avoid adding manual "Apply" buttons unless explicitly requested.
 
 ---

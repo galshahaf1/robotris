@@ -7,8 +7,8 @@ This workspace contains a modular, parameter-driven system designed to control a
 ```text
 Robotris/
 ├── README.md                           # Developer & Agent documentation
-├── Wing_Motion_V6_Tuning/              # Arduino Project Source Code
-│   ├── Wing_Motion_V6_Tuning.ino       # Main loop and state machine
+├── Wing_Motion_Arduino/                # Arduino Project Source Code
+│   ├── Wing_Motion_Arduino.ino         # Main loop and state machine
 │   ├── Config.h                        # Structs, pins, and shared config
 │   ├── Motions.h / Motions.cpp         # Physical motion calculation formulas
 │   └── SerialHandler.h / .cpp          # Serial command parser
@@ -24,9 +24,9 @@ Robotris/
 ## Arduino Architecture (C++)
 
 To allow easy extensions and prevent reading huge files, the Arduino codebase is modularized:
-1. **[Config.h](file:///c:/Users/isa/Desktop/Robotris/Wing_Motion_V6_Tuning/Config.h)**: Centralizes pin definitions (`servoPins`, `buttonPin`), global variables, the state enum (`SystemState`), and the `MotionParams` configuration struct.
-2. **[Motions.h](file:///c:/Users/isa/Desktop/Robotris/Wing_Motion_V6_Tuning/Motions.h) / [Motions.cpp](file:///c:/Users/isa/Desktop/Robotris/Wing_Motion_V6_Tuning/Motions.cpp)**: Contains all math equations for the 7 movement modes. Instead of hardcoded constants, they read dynamically from the `motionConfigs` struct array.
-3. **[SerialHandler.h](file:///c:/Users/isa/Desktop/Robotris/Wing_Motion_V6_Tuning/SerialHandler.h) / [SerialHandler.cpp](file:///c:/Users/isa/Desktop/Robotris/Wing_Motion_V6_Tuning/SerialHandler.cpp)**: Listens to incoming serial lines, parses commands, updates configurations, and acknowledges them.
+1. **[Config.h](file:///c:/Users/isa/Desktop/Robotris/Wing_Motion_Arduino/Config.h)**: Centralizes pin definitions (`servoPins`, `buttonPin`), global variables, the state enum (`SystemState`), and the `MotionParams` configuration struct.
+2. **[Motions.h](file:///c:/Users/isa/Desktop/Robotris/Wing_Motion_Arduino/Motions.h) / [Motions.cpp](file:///c:/Users/isa/Desktop/Robotris/Wing_Motion_Arduino/Motions.cpp)**: Contains all math equations for the 7 movement modes. Instead of hardcoded constants, they read dynamically from the `motionConfigs` struct array.
+3. **[SerialHandler.h](file:///c:/Users/isa/Desktop/Robotris/Wing_Motion_Arduino/SerialHandler.h) / [SerialHandler.cpp](file:///c:/Users/isa/Desktop/Robotris/Wing_Motion_Arduino/SerialHandler.cpp)**: Listens to incoming serial lines, parses commands, updates configurations, and acknowledges them.
 
 ---
 

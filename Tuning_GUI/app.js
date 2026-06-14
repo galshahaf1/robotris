@@ -72,12 +72,14 @@ function updateSlidersUI(mode) {
     sliderPhase.max = 1000;
     sliderPhase.step = 10;
     unitPhase.textContent = "ms";
+    document.getElementById("desc-phase").textContent = "השהיית זמן במילי-שניות בין כנף לכנף (יוצרת אפקט גל זורם מצד לצד).";
   } else {
     // Normal sine modes use numeric multipliers
     sliderPhase.min = 0;
     sliderPhase.max = 5;
     sliderPhase.step = 0.1;
     unitPhase.textContent = "mult";
+    document.getElementById("desc-phase").textContent = "התיאום בין הכנפיים - העיכוב וההשהיה בין כנף לכנף שיוצרים את אפקט הגל.";
   }
 
   // Sleep mode disables parameter tuning

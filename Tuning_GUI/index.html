@@ -76,9 +76,10 @@
             <!-- Parameter: Speed -->
             <div class="param-row">
               <div class="param-info">
-                <label for="param-speed">Speed</label>
+                <label for="param-speed">Speed (מהירות)</label>
                 <span class="param-value" id="val-speed">-</span>
               </div>
+              <p class="param-desc">קצב התנועה - כמה זמן (במילי-שניות) לוקח להשלים נפנוף שלם. ערך נמוך = מהיר, גבוה = איטי.</p>
               <input type="range" id="param-speed" class="param-slider" min="10" max="5000" step="10">
               <span class="param-unit" id="unit-speed">ms</span>
             </div>
@@ -86,9 +87,10 @@
             <!-- Parameter: Amplitude -->
             <div class="param-row">
               <div class="param-info">
-                <label for="param-amplitude">Amplitude</label>
+                <label for="param-amplitude">Amplitude (טווח פתיחה)</label>
                 <span class="param-value" id="val-amplitude">-</span>
               </div>
+              <p class="param-desc">רוחב נפנוף הכנפיים - כמה מעלות הכנף נפתחת לרווחה מנקודת המוצא שלה.</p>
               <input type="range" id="param-amplitude" class="param-slider" min="0" max="180" step="1">
               <span class="param-unit">°</span>
             </div>
@@ -96,9 +98,10 @@
             <!-- Parameter: Center Offset -->
             <div class="param-row">
               <div class="param-info">
-                <label for="param-center">Center Offset</label>
+                <label for="param-center">Center Offset (זווית בסיס)</label>
                 <span class="param-value" id="val-center">-</span>
               </div>
+              <p class="param-desc">נקודת המוצא - הזווית שבה הכנף מתחילה או נמצאת במנוחה (0 = סגור לגמרי, 90 = מרכז, 180 = פתוח לצד השני).</p>
               <input type="range" id="param-center" class="param-slider" min="0" max="180" step="1">
               <span class="param-unit">°</span>
             </div>
@@ -106,9 +109,10 @@
             <!-- Parameter: Phase Offset -->
             <div class="param-row">
               <div class="param-info">
-                <label for="param-phase">Phase Offset</label>
+                <label for="param-phase">Phase Offset (תיאום וסנכרון)</label>
                 <span class="param-value" id="val-phase">-</span>
               </div>
+              <p id="desc-phase" class="param-desc">התיאום בין הכנפיים - העיכוב וההשהיה בין כנף לכנף שיוצרים את אפקט הגל.</p>
               <input type="range" id="param-phase" class="param-slider" min="0" max="1000" step="1">
               <span class="param-unit" id="unit-phase">val</span>
             </div>

@@ -286,6 +286,16 @@ h1 {
   gap: 0.5rem;
 }
 
+.param-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-top: -0.15rem;
+  margin-bottom: 0.2rem;
+  direction: rtl;
+  text-align: right;
+}
+
 .param-info {
   display: flex;
   justify-content: space-between;

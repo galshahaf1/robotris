@@ -9,3 +9,6 @@ Thumbs.db
 # Keep docx if desired, but we can list it or leave it. Let's keep code only or track everything for now except large/temp files.
 *.tmp
 *.bak
+
+# Ignore old versions folder
+/OLD/

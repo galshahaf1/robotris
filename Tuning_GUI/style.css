@@ -370,3 +370,31 @@ h1 {
 .terminal-log div {
   margin-bottom: 0.25rem;
 }
+
+/* --- User Instructions --- */
+.instructions-card h3 {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  direction: rtl;
+  text-align: right;
+}
+
+.instructions-list {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  direction: rtl;
+  text-align: right;
+}
+
+.instructions-list li {
+  font-size: 0.88rem;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.instructions-list strong {
+  color: var(--accent-color);
+}

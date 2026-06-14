@@ -127,8 +127,6 @@ function sendCurrentParams() {
   }, 50);
 }
 
-const activateBtn = document.getElementById("activate-btn");
-
 // Mode Selection Button Click
 function selectMode(mode) {
   currentSelectedMode = mode;
@@ -143,6 +141,11 @@ function selectMode(mode) {
   });
 
   updateSlidersUI(mode);
+
+  if (isConnected) {
+    // Command Arduino to switch to this mode immediately on selection
+    window.serialConn.sendCommand(`MODE:${mode}`);
+  }
 }
 
 // Bind Sliders input event
@@ -176,13 +179,6 @@ sendBtn.addEventListener("click", () => {
   sendCurrentParams();
 });
 
-// Activate Button Click (Triggers Mode switch on Arduino)
-activateBtn.addEventListener("click", () => {
-  if (isConnected) {
-    window.serialConn.sendCommand(`MODE:${currentSelectedMode}`);
-  }
-});
-
 // Setup Mode Tab click handlers
 document.querySelectorAll(".mode-tab").forEach(tab => {
   tab.addEventListener("click", () => {
@@ -200,7 +196,6 @@ window.serialConn.onConnect = () => {
   statusDot.className = "dot connected";
   statusText.textContent = "Connected";
   sendBtn.removeAttribute("disabled");
-  activateBtn.removeAttribute("disabled");
   
   if (currentSelectedMode !== 8) {
     tunerControls.classList.remove("disabled-overlay");
@@ -216,7 +211,6 @@ window.serialConn.onDisconnect = () => {
   statusText.textContent = "Disconnected";
   activeModeName.textContent = "-";
   sendBtn.setAttribute("disabled", "true");
-  activateBtn.setAttribute("disabled", "true");
   tunerControls.classList.add("disabled-overlay");
   
   // Remove running highlights

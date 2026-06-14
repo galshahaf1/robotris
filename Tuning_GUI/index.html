@@ -66,10 +66,7 @@
         <section class="controls-card card">
           <div class="card-header">
             <h2 id="current-tuner-title">Select a mode to tune</h2>
-            <div class="header-actions" style="display: flex; gap: 0.5rem;">
-              <button id="activate-btn" class="btn btn-primary" disabled>Activate Mode</button>
-              <button id="send-btn" class="btn btn-secondary" disabled>Apply Now</button>
-            </div>
+            <button id="send-btn" class="btn btn-secondary" disabled>Apply Now</button>
           </div>
 
           <div id="tuner-controls" class="tuner-controls disabled-overlay">
@@ -119,6 +116,17 @@
           </div>
         </section>
       </div>
+
+      <!-- User Instructions -->
+      <section class="instructions-card card">
+        <h3>מדריך למשתמש (Instructions)</h3>
+        <ul class="instructions-list">
+          <li><strong>🔌 חיבור המערכת:</strong> לחץ על כפתור <b>Connect Arduino</b> בראש המסך ובחר ביציאת ה-USB של הבקר.</li>
+          <li><strong>🎭 הפעלת תנועות:</strong> לחיצה על כל אחד מהמצבים ברשימה השמאלית תפעיל מיידית את התנועה ברובוט.</li>
+          <li><strong>⚙️ כיול בזמן אמת:</strong> לאחר בחירת מצב, הזז את הסליידרים כדי לכוון את אופי התנועה (מהירות, טווח פתיחה, דיליי בין כנפיים). השינויים משפיעים על הרובוט מייד.</li>
+          <li><strong>💾 שמירת הגדרות:</strong> הערכים משתנים בזיכרון של הארדואינו. כל עוד הוא מחובר לחשמל, הוא יזכור את הפרמטרים שכיילת.</li>
+        </ul>
+      </section>
 
       <!-- Log Terminal for verification -->
       <section class="terminal-card card">

@@ -7,7 +7,7 @@ float currentPos[4] = {90.0, 90.0, 90.0, 90.0};
 float targetPos[4]  = {90.0, 90.0, 90.0, 90.0};
 
 // Initialize the motion configurations with their default values
-MotionParams motionConfigs[8] = {
+MotionParams motionConfigs[9] = {
   {0.0, 0.0, 0.0, 0.0},                              // Index 0 (unused)
   {1500.0, 40.0, 70.0, 0.8},                         // MODE_1_BREATHING
   {2000.0, 20.0, 140.0, 0.3},                        // MODE_2_COCOON
@@ -15,7 +15,8 @@ MotionParams motionConfigs[8] = {
   {450.0, 90.0, 45.0, 1.5},                          // MODE_4_RIPPLE
   {1000.0, 9.0, 90.0, 1.0},                          // MODE_5_SHIVER (amplitude=9.0 degrees peak, speed=1000.0 scale)
   {2400.0, 60.0, 60.0, 400.0},                       // MODE_6_ROLL (speed=2400ms period, phaseOffset=400ms delay)
-  {0.0, 0.0, 90.0, 0.0}                              // MODE_7_SLEEP (centerOffset=90.0)
+  {800.0, 180.0, 0.0, 200.0},                        // MODE_7_STADIUM_WAVE (speed=800ms swing S, amplitude=180 max, centerOffset=0 min, phaseOffset=200ms delay d)
+  {0.0, 0.0, 90.0, 0.0}                              // MODE_8_SLEEP (centerOffset=90.0)
 };
 
 void calculateTargets(unsigned long time) {
@@ -106,7 +107,43 @@ void calculateTargets(unsigned long time) {
       break;
     }
 
-    case MODE_7_SLEEP: {
+    case MODE_7_STADIUM_WAVE: {
+      float S = params.speed;
+      float d = params.phaseOffset;
+      float maxVal = params.amplitude;
+      float minVal = params.centerOffset;
+
+      float T = 6.0 * d + 2.0 * S + 100.0;
+      if (T <= 0) T = 1000.0;
+
+      float t = fmod((double)time, T);
+      if (t < 0) t += T;
+
+      for (int i = 0; i < 4; i++) {
+        float t_up_start = i * d;
+        float t_up_end = t_up_start + S;
+        float t_down_start = (6.0 - (float)i) * d + S;
+        float t_down_end = t_down_start + S;
+
+        if (t >= t_up_start && t < t_up_end) {
+          float progress = (t - t_up_start) / S;
+          targetPos[i] = minVal + progress * (maxVal - minVal);
+        }
+        else if (t >= t_up_end && t < t_down_start) {
+          targetPos[i] = maxVal;
+        }
+        else if (t >= t_down_start && t < t_down_end) {
+          float progress = (t - t_down_start) / S;
+          targetPos[i] = maxVal - progress * (maxVal - minVal);
+        }
+        else {
+          targetPos[i] = minVal;
+        }
+      }
+      break;
+    }
+
+    case MODE_8_SLEEP: {
       for (int i = 0; i < 4; i++) {
         targetPos[i] = params.centerOffset;
       }

@@ -1,6 +1,6 @@
 // --- UI Logic and State Management ---
 
-// Local state for all 7 modes (synchronized with Arduino)
+// Local state for all 8 modes (synchronized with Arduino)
 const configs = {
   1: { speed: 1500, amplitude: 40, centerOffset: 70, phaseOffset: 0.8 },
   2: { speed: 2000, amplitude: 20, centerOffset: 140, phaseOffset: 0.3 },
@@ -8,7 +8,8 @@ const configs = {
   4: { speed: 450, amplitude: 90, centerOffset: 45, phaseOffset: 1.5 },
   5: { speed: 1000, amplitude: 9, centerOffset: 90, phaseOffset: 1.0 },
   6: { speed: 2400, amplitude: 60, centerOffset: 60, phaseOffset: 400.0 },
-  7: { speed: 1000, amplitude: 0, centerOffset: 90, phaseOffset: 0.0 }
+  7: { speed: 800, amplitude: 180, centerOffset: 0, phaseOffset: 200.0 },
+  8: { speed: 1000, amplitude: 0, centerOffset: 90, phaseOffset: 0.0 }
 };
 
 const modeNames = {
@@ -18,7 +19,8 @@ const modeNames = {
   4: "Ripple (Gentle Breeze)",
   5: "Shiver (Tremor)",
   6: "Roll (One-way Wave)",
-  7: "Sleep (Rest)"
+  7: "Stadium Wave (Wave)",
+  8: "Sleep (Rest)"
 };
 
 let currentSelectedMode = 1;
@@ -64,8 +66,8 @@ function updateSlidersUI(mode) {
   if (!cfg) return;
 
   // Custom bounds/units depending on mode
-  if (mode === 6) {
-    // Roll uses milliseconds for phase offset
+  if (mode === 6 || mode === 7) {
+    // Roll and Stadium Wave use milliseconds for phase offset
     sliderPhase.min = 0;
     sliderPhase.max = 1000;
     sliderPhase.step = 10;
@@ -79,7 +81,7 @@ function updateSlidersUI(mode) {
   }
 
   // Sleep mode disables parameter tuning
-  if (mode === 7) {
+  if (mode === 8) {
     tunerControls.classList.add("disabled-overlay");
     tunerTitle.textContent = `${modeNames[mode]} (No Parameters)`;
   } else {
@@ -198,7 +200,7 @@ window.serialConn.onConnect = () => {
   sendBtn.removeAttribute("disabled");
   activateBtn.removeAttribute("disabled");
   
-  if (currentSelectedMode !== 7) {
+  if (currentSelectedMode !== 8) {
     tunerControls.classList.remove("disabled-overlay");
   }
   logToTerminal("Connected successfully to Arduino. Syncing configurations...", "success");

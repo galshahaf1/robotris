@@ -20,7 +20,8 @@ enum SystemState {
   MODE_4_RIPPLE = 4,
   MODE_5_SHIVER = 5,
   MODE_6_ROLL = 6,
-  MODE_7_SLEEP = 7
+  MODE_7_STADIUM_WAVE = 7,
+  MODE_8_SLEEP = 8
 };
 
 // --- Motion Parameters Structure ---
@@ -36,6 +37,6 @@ extern Servo servos[4];
 extern SystemState currentState;
 extern float currentPos[4];
 extern float targetPos[4];
-extern MotionParams motionConfigs[8]; // Indices 1-7 correspond to SystemState values
+extern MotionParams motionConfigs[9]; // Indices 1-8 correspond to SystemState values
 
 #endif // CONFIG_H

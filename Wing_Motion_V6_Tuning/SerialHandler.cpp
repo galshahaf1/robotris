@@ -22,7 +22,7 @@ void handleSerialCommands() {
         float centerOffset = command.substring(fourthColon + 1, fifthColon).toFloat();
         float phaseOffset = command.substring(fifthColon + 1).toFloat();
         
-        if (mode >= 1 && mode <= 7) {
+        if (mode >= 1 && mode <= 8) {
           motionConfigs[mode].speed = speed;
           motionConfigs[mode].amplitude = amplitude;
           motionConfigs[mode].centerOffset = centerOffset;
@@ -51,7 +51,7 @@ void handleSerialCommands() {
       int colon = command.indexOf(':');
       if (colon != -1) {
         int mode = command.substring(colon + 1).toInt();
-        if (mode >= 1 && mode <= 7) {
+        if (mode >= 1 && mode <= 8) {
           currentState = (SystemState)mode;
           Serial.print("ACK:MODE:");
           Serial.println(mode);
@@ -62,7 +62,7 @@ void handleSerialCommands() {
     }
     else if (command.equals("GET_CONFIGS")) {
       // Send current configs to GUI
-      for (int i = 1; i <= 7; i++) {
+      for (int i = 1; i <= 8; i++) {
         Serial.print("CFG:");
         Serial.print(i);
         Serial.print(":");

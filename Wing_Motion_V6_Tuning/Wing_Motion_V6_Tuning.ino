@@ -39,14 +39,14 @@ void loop() {
     isPressing = false;
     
     if (pressDuration >= 600) { 
-      currentState = MODE_7_SLEEP;
-      Serial.println("Mode: 7 (SLEEP_MODE)");
+      currentState = MODE_8_SLEEP;
+      Serial.println("Mode: 8 (SLEEP_MODE)");
     } else if (pressDuration > 50) { 
-      if (currentState == MODE_7_SLEEP) {
+      if (currentState == MODE_8_SLEEP) {
         currentState = MODE_1_BREATHING; 
       } else {
         int nextState = (int)currentState + 1;
-        if (nextState > 6) nextState = 1; 
+        if (nextState > 7) nextState = 1; 
         currentState = (SystemState)nextState;
       }
       Serial.print("Mode changed to: ");

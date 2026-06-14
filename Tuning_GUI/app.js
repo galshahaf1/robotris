@@ -34,6 +34,7 @@ const statusText = document.getElementById("status-text");
 const activeModeName = document.getElementById("active-mode-name");
 const tunerTitle = document.getElementById("current-tuner-title");
 const tunerControls = document.getElementById("tuner-controls");
+const saveBtn = document.getElementById("save-btn");
 const terminalLog = document.getElementById("terminal-log");
 
 const sliderSpeed = document.getElementById("param-speed");
@@ -175,6 +176,13 @@ connectBtn.addEventListener("click", async () => {
 
 
 
+// Save Button Click (Sends SAVE command to Arduino)
+saveBtn.addEventListener("click", () => {
+  if (isConnected) {
+    window.serialConn.sendCommand(`SAVE:${currentSelectedMode}`);
+  }
+});
+
 // Setup Mode Tab click handlers
 document.querySelectorAll(".mode-tab").forEach(tab => {
   tab.addEventListener("click", () => {
@@ -193,6 +201,8 @@ window.serialConn.onConnect = () => {
   statusText.textContent = "Connected";
 
   
+  saveBtn.removeAttribute("disabled");
+  
   if (currentSelectedMode !== 8) {
     tunerControls.classList.remove("disabled-overlay");
   }
@@ -207,6 +217,7 @@ window.serialConn.onDisconnect = () => {
   statusText.textContent = "Disconnected";
   activeModeName.textContent = "-";
 
+  saveBtn.setAttribute("disabled", "true");
   tunerControls.classList.add("disabled-overlay");
   
   // Remove running highlights
@@ -239,6 +250,9 @@ window.serialConn.onLineReceived = (line) => {
     logToTerminal("Configurations fully synced from Arduino.", "success");
   } else if (line.startsWith("ACK:SET:")) {
     logToTerminal(`Setting updated: ${line}`, "success");
+  } else if (line.startsWith("ACK:SAVE:")) {
+    const mode = parseInt(line.split(":")[2]);
+    logToTerminal(`Saved config for ${modeNames[mode] || mode} permanently to Arduino!`, "success");
   } else if (line.startsWith("ACK:MODE:")) {
     const mode = parseInt(line.split(":")[2]);
     activeModeName.textContent = modeNames[mode] || mode;

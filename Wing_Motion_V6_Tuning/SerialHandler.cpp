@@ -1,4 +1,5 @@
 #include "SerialHandler.h"
+#include <EEPROM.h>
 
 void handleSerialCommands() {
   if (Serial.available() > 0) {
@@ -54,6 +55,23 @@ void handleSerialCommands() {
         if (mode >= 1 && mode <= 8) {
           currentState = (SystemState)mode;
           Serial.print("ACK:MODE:");
+          Serial.println(mode);
+        } else {
+          Serial.println("ERR:Invalid mode");
+        }
+      }
+    }
+    else if (command.startsWith("SAVE:")) {
+      // Format: SAVE:<mode>
+      // Example: SAVE:1
+      int colon = command.indexOf(':');
+      if (colon != -1) {
+        int mode = command.substring(colon + 1).toInt();
+        if (mode >= 1 && mode <= 8) {
+          int addr = 1 + (mode - 1) * sizeof(MotionParams);
+          EEPROM.put(addr, motionConfigs[mode]);
+          
+          Serial.print("ACK:SAVE:");
           Serial.println(mode);
         } else {
           Serial.println("ERR:Invalid mode");

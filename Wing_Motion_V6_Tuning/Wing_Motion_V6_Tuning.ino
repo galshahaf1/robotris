@@ -1,10 +1,13 @@
 #include "Config.h"
 #include "Motions.h"
 #include "SerialHandler.h"
+#include <EEPROM.h>
 
 bool lastButtonState = HIGH; 
 unsigned long buttonPressTime = 0;
 bool isPressing = false;
+
+const byte EEPROM_MAGIC = 0xA5;
 
 void setup() {
   Serial.begin(9600);
@@ -16,6 +19,23 @@ void setup() {
   
   // Setup button
   pinMode(buttonPin, INPUT_PULLUP); 
+  
+  // Read/Initialize configurations from EEPROM
+  if (EEPROM.read(0) == EEPROM_MAGIC) {
+    for (int i = 1; i <= 8; i++) {
+      int addr = 1 + (i - 1) * sizeof(MotionParams);
+      EEPROM.get(addr, motionConfigs[i]);
+    }
+    Serial.println("Loaded configurations from EEPROM.");
+  } else {
+    // Write defaults to EEPROM
+    for (int i = 1; i <= 8; i++) {
+      int addr = 1 + (i - 1) * sizeof(MotionParams);
+      EEPROM.put(addr, motionConfigs[i]);
+    }
+    EEPROM.write(0, EEPROM_MAGIC);
+    Serial.println("Initialized default configurations in EEPROM.");
+  }
   
   Serial.println("System Started. Mode: 1 (Breathing)");
 }

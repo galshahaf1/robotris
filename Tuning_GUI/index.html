@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Robotris - Wing Motion Tuner</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="logo-area">
+        <span class="logo-icon">🤖</span>
+        <h1>Robotris <span class="accent-text">Motion Tuner</span></h1>
+      </div>
+      <button id="connect-btn" class="btn btn-primary">Connect Arduino</button>
+    </header>
+
+    <main class="app-main">
+      <div class="status-panel card">
+        <div class="status-indicator">
+          <div id="status-dot" class="dot disconnected"></div>
+          <span id="status-text">Disconnected</span>
+        </div>
+        <div id="active-mode-display" class="active-mode">
+          Active Mode: <strong id="active-mode-name">-</strong>
+        </div>
+      </div>
+
+      <div class="tuner-grid">
+        <!-- Sidebar: Mode Selection -->
+        <section class="modes-card card">
+          <h2>Select Motion Mode</h2>
+          <div class="modes-list">
+            <button class="mode-tab btn" data-mode="1">
+              <span class="mode-num">1</span> Breathing
+            </button>
+            <button class="mode-tab btn" data-mode="2">
+              <span class="mode-num">2</span> Cocoon
+            </button>
+            <button class="mode-tab btn" data-mode="3">
+              <span class="mode-num">3</span> Conflict
+            </button>
+            <button class="mode-tab btn" data-mode="4">
+              <span class="mode-num">4</span> Ripple
+            </button>
+            <button class="mode-tab btn" data-mode="5">
+              <span class="mode-num">5</span> Shiver
+            </button>
+            <button class="mode-tab btn" data-mode="6">
+              <span class="mode-num">6</span> Roll
+            </button>
+            <button class="mode-tab btn" data-mode="7">
+              <span class="mode-num">7</span> Sleep
+            </button>
+          </div>
+        </section>
+
+        <!-- Main Workspace: Parameter Controls -->
+        <section class="controls-card card">
+          <div class="card-header">
+            <h2 id="current-tuner-title">Select a mode to tune</h2>
+            <button id="send-btn" class="btn btn-secondary" disabled>Apply Now</button>
+          </div>
+
+          <div id="tuner-controls" class="tuner-controls disabled-overlay">
+            <!-- Parameter: Speed -->
+            <div class="param-row">
+              <div class="param-info">
+                <label for="param-speed">Speed</label>
+                <span class="param-value" id="val-speed">-</span>
+              </div>
+              <input type="range" id="param-speed" class="param-slider" min="10" max="5000" step="10">
+              <span class="param-unit" id="unit-speed">ms</span>
+            </div>
+
+            <!-- Parameter: Amplitude -->
+            <div class="param-row">
+              <div class="param-info">
+                <label for="param-amplitude">Amplitude</label>
+                <span class="param-value" id="val-amplitude">-</span>
+              </div>
+              <input type="range" id="param-amplitude" class="param-slider" min="0" max="180" step="1">
+              <span class="param-unit">°</span>
+            </div>
+
+            <!-- Parameter: Center Offset -->
+            <div class="param-row">
+              <div class="param-info">
+                <label for="param-center">Center Offset</label>
+                <span class="param-value" id="val-center">-</span>
+              </div>
+              <input type="range" id="param-center" class="param-slider" min="0" max="180" step="1">
+              <span class="param-unit">°</span>
+            </div>
+
+            <!-- Parameter: Phase Offset -->
+            <div class="param-row">
+              <div class="param-info">
+                <label for="param-phase">Phase Offset</label>
+                <span class="param-value" id="val-phase">-</span>
+              </div>
+              <input type="range" id="param-phase" class="param-slider" min="0" max="1000" step="1">
+              <span class="param-unit" id="unit-phase">val</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Log Terminal for verification -->
+      <section class="terminal-card card">
+        <h3>Communication Logs</h3>
+        <div id="terminal-log" class="terminal-log">
+          <div>Welcome to Robotris Motion Tuner. Connect your Arduino Uno R4 Minima via USB to begin.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="serial.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

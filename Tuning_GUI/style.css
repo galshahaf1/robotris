@@ -232,6 +232,21 @@ h1 {
   background-color: var(--accent-color);
 }
 
+.mode-tab.running::after {
+  content: "●";
+  color: var(--success-color);
+  margin-left: auto;
+  font-size: 0.8rem;
+  text-shadow: 0 0 8px var(--success-glow);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
 /* --- Workspace controls --- */
 .controls-card {
   display: flex;

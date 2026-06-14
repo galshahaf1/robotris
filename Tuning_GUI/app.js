@@ -123,6 +123,8 @@ function sendCurrentParams() {
   }, 50);
 }
 
+const activateBtn = document.getElementById("activate-btn");
+
 // Mode Selection Button Click
 function selectMode(mode) {
   currentSelectedMode = mode;
@@ -137,11 +139,6 @@ function selectMode(mode) {
   });
 
   updateSlidersUI(mode);
-
-  if (isConnected) {
-    // Command Arduino to switch to this mode
-    window.serialConn.sendCommand(`MODE:${mode}`);
-  }
 }
 
 // Bind Sliders input event
@@ -175,6 +172,13 @@ sendBtn.addEventListener("click", () => {
   sendCurrentParams();
 });
 
+// Activate Button Click (Triggers Mode switch on Arduino)
+activateBtn.addEventListener("click", () => {
+  if (isConnected) {
+    window.serialConn.sendCommand(`MODE:${currentSelectedMode}`);
+  }
+});
+
 // Setup Mode Tab click handlers
 document.querySelectorAll(".mode-tab").forEach(tab => {
   tab.addEventListener("click", () => {
@@ -192,6 +196,7 @@ window.serialConn.onConnect = () => {
   statusDot.className = "dot connected";
   statusText.textContent = "Connected";
   sendBtn.removeAttribute("disabled");
+  activateBtn.removeAttribute("disabled");
   
   if (currentSelectedMode !== 7) {
     tunerControls.classList.remove("disabled-overlay");
@@ -207,7 +212,14 @@ window.serialConn.onDisconnect = () => {
   statusText.textContent = "Disconnected";
   activeModeName.textContent = "-";
   sendBtn.setAttribute("disabled", "true");
+  activateBtn.setAttribute("disabled", "true");
   tunerControls.classList.add("disabled-overlay");
+  
+  // Remove running highlights
+  document.querySelectorAll(".mode-tab").forEach(tab => {
+    tab.classList.remove("running");
+  });
+  
   logToTerminal("Connection closed.");
 };
 
@@ -237,6 +249,15 @@ window.serialConn.onLineReceived = (line) => {
     const mode = parseInt(line.split(":")[2]);
     activeModeName.textContent = modeNames[mode] || mode;
     logToTerminal(`Mode switched: ${modeNames[mode] || mode}`);
+    
+    // Highlight the running mode in the sidebar list
+    document.querySelectorAll(".mode-tab").forEach(tab => {
+      if (parseInt(tab.dataset.mode) === mode) {
+        tab.classList.add("running");
+      } else {
+        tab.classList.remove("running");
+      }
+    });
   } else {
     // Normal print output from Arduino (like startup messages)
     logToTerminal(`Arduino: ${line}`);

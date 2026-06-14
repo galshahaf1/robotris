@@ -34,7 +34,6 @@ const statusText = document.getElementById("status-text");
 const activeModeName = document.getElementById("active-mode-name");
 const tunerTitle = document.getElementById("current-tuner-title");
 const tunerControls = document.getElementById("tuner-controls");
-const sendBtn = document.getElementById("send-btn");
 const terminalLog = document.getElementById("terminal-log");
 
 const sliderSpeed = document.getElementById("param-speed");
@@ -174,10 +173,7 @@ connectBtn.addEventListener("click", async () => {
   }
 });
 
-// Manual Apply Button Click
-sendBtn.addEventListener("click", () => {
-  sendCurrentParams();
-});
+
 
 // Setup Mode Tab click handlers
 document.querySelectorAll(".mode-tab").forEach(tab => {
@@ -195,7 +191,7 @@ window.serialConn.onConnect = () => {
   connectBtn.className = "btn btn-secondary";
   statusDot.className = "dot connected";
   statusText.textContent = "Connected";
-  sendBtn.removeAttribute("disabled");
+
   
   if (currentSelectedMode !== 8) {
     tunerControls.classList.remove("disabled-overlay");
@@ -210,7 +206,7 @@ window.serialConn.onDisconnect = () => {
   statusDot.className = "dot disconnected";
   statusText.textContent = "Disconnected";
   activeModeName.textContent = "-";
-  sendBtn.setAttribute("disabled", "true");
+
   tunerControls.classList.add("disabled-overlay");
   
   // Remove running highlights

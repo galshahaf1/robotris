@@ -6,7 +6,7 @@ const configs = {
   2: { speed: 2000, amplitude: 20, centerOffset: 140, phaseOffset: 0.3 },
   3: { speed: 3000, amplitude: 60, centerOffset: 20, phaseOffset: 2.0 },
   4: { speed: 450, amplitude: 90, centerOffset: 45, phaseOffset: 1.5 },
-  5: { speed: 1000, amplitude: 9, centerOffset: 90, phaseOffset: 1.0 },
+  5: { speed: 1000, amplitude: 6, centerOffset: 90, phaseOffset: 1.5 },
   6: { speed: 2400, amplitude: 60, centerOffset: 60, phaseOffset: 400.0 },
   7: { speed: 800, amplitude: 180, centerOffset: 0, phaseOffset: 200.0 },
   8: { speed: 1000, amplitude: 0, centerOffset: 90, phaseOffset: 0.0 }

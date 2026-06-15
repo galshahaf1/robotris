@@ -12,7 +12,7 @@ MotionParams motionConfigs[9] = {
   {0.0, 0.0, 0.0, 0.0},                              // Index 0 (unused)
   {1500.0, 40.0, 70.0, 0.8},                         // MODE_1_BREATHING
   {1500.0, 60.0, 60.0, 0.0},                         // MODE_2_SWEEP
-  {2400.0, 80.0, 40.0, 400.0},                       // MODE_3_CONFLICT (speed=2400ms period, amplitude=80deg range, centerOffset=40deg closed, phaseOffset=400ms delay)
+  {2400.0, 80.0, 40.0, 400.0},                       // MODE_3_MIRROR (speed=2400ms period, amplitude=80deg range, centerOffset=40deg closed, phaseOffset=400ms delay)
   {450.0, 90.0, 45.0, 1.5},                          // MODE_4_RIPPLE
   {1000.0, 6.0, 90.0, 1.5},                          // MODE_5_SHIVER (speed=freq multiplier, amplitude=wiggle degrees, centerOffset=base pos, phaseOffset=variance)
   {2400.0, 60.0, 60.0, 400.0},                       // MODE_6_ROLL (speed=2400ms period, phaseOffset=400ms delay)
@@ -43,7 +43,7 @@ void calculateTargets(unsigned long time) {
       break;
     }
       
-    case MODE_3_CONFLICT: {
+    case MODE_3_MIRROR: {
       float T = params.speed;
       if (T <= 0.01) T = 1000.0;
       float d = params.phaseOffset;

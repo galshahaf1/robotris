@@ -16,7 +16,7 @@ const float easingFactorShiver = 0.25;
 enum SystemState {
   MODE_1_BREATHING = 1,
   MODE_2_SWEEP = 2,
-  MODE_3_CONFLICT = 3,
+  MODE_3_MIRROR = 3,
   MODE_4_RIPPLE = 4,
   MODE_5_SHIVER = 5,
   MODE_6_ROLL = 6,

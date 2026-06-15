@@ -15,7 +15,7 @@ const configs = {
 const modeNames = {
   1: "Breathing (Normal)",
   2: "Sweep (Parallel)",
-  3: "Conflict (Sweeping Wave)",
+  3: "Mirror (Symmetric Wave)",
   4: "Ripple (Gentle Breeze)",
   5: "Shiver (Tremor)",
   6: "Roll (One-way Wave)",

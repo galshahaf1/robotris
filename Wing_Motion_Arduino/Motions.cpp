@@ -57,35 +57,51 @@ void calculateTargets(unsigned long time) {
       float S = H / 2.0; 
 
       for (int i = 0; i < 4; i++) {
-        float dist = fabs(1.5 - (float)i) - 0.5;
-        float t_close_start, t_open_start;
+        float breath = 0.0;
 
-        if (dist > 0.5) {
-          t_close_start = 0.0;
-          t_open_start = H + d;
+        if (i == 0 || i == 3) { // Outer wings
+          if (t < H) {
+            if (t < S) {
+              float progress = t / S;
+              breath = 1.0 - (1.0 - cos(progress * M_PI)) / 2.0;
+            } else {
+              breath = 0.0;
+            }
+          } else {
+            if (t < H + d) {
+              breath = 0.0;
+            } else if (t < H + d + S) {
+              float progress = (t - (H + d)) / S;
+              breath = (1.0 - cos(progress * M_PI)) / 2.0;
+            } else {
+              breath = 1.0;
+            }
+          }
+        } else { // Inner wings (1 and 2)
+          if (t < H) {
+            if (t < d) {
+              breath = 1.0;
+            } else if (t < d + S) {
+              float progress = (t - d) / S;
+              breath = 1.0 - (1.0 - cos(progress * M_PI)) / 2.0;
+            } else {
+              breath = 0.0;
+            }
+          } else {
+            if (t < H + S) {
+              float progress = (t - H) / S;
+              breath = (1.0 - cos(progress * M_PI)) / 2.0;
+            } else {
+              breath = 1.0;
+            }
+          }
+        }
+
+        // Apply mirroring: left side (0, 1) and right side (2, 3) move in opposite directions
+        if (i < 2) {
+          targetPos[i] = minVal + (breath * (maxVal - minVal));
         } else {
-          t_close_start = d;
-          t_open_start = H;
-        }
-
-        float t_close_end = t_close_start + S;
-        float t_open_end = t_open_start + S;
-
-        if (t >= t_close_start && t < t_close_end) {
-          float progress = (t - t_close_start) / S;
-          float ease = (1.0 - cos(progress * M_PI)) / 2.0; 
-          targetPos[i] = maxVal - ease * (maxVal - minVal);
-        }
-        else if (t >= t_close_end && t < t_open_start) {
-          targetPos[i] = minVal;
-        }
-        else if (t >= t_open_start && t < t_open_end) {
-          float progress = (t - t_open_start) / S;
-          float ease = (1.0 - cos(progress * M_PI)) / 2.0; 
-          targetPos[i] = minVal + ease * (maxVal - minVal);
-        }
-        else {
-          targetPos[i] = maxVal;
+          targetPos[i] = maxVal - (breath * (maxVal - minVal));
         }
       }
       break;

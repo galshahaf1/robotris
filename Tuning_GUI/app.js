@@ -3,7 +3,7 @@
 // Local state for all 8 modes (synchronized with Arduino)
 const configs = {
   1: { speed: 1500, amplitude: 40, centerOffset: 70, phaseOffset: 0.8 },
-  2: { speed: 2000, amplitude: 20, centerOffset: 140, phaseOffset: 0.3 },
+  2: { speed: 1500, amplitude: 60, centerOffset: 60, phaseOffset: 0.0 },
   3: { speed: 2400, amplitude: 80, centerOffset: 40, phaseOffset: 400.0 },
   4: { speed: 450, amplitude: 90, centerOffset: 45, phaseOffset: 1.5 },
   5: { speed: 1000, amplitude: 6, centerOffset: 90, phaseOffset: 1.5 },
@@ -14,7 +14,7 @@ const configs = {
 
 const modeNames = {
   1: "Breathing (Normal)",
-  2: "Cocoon (Defensive)",
+  2: "Sweep (Parallel)",
   3: "Conflict (Sweeping Wave)",
   4: "Ripple (Gentle Breeze)",
   5: "Shiver (Tremor)",

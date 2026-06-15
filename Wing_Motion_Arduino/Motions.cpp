@@ -11,7 +11,7 @@ float targetPos[4]  = {90.0, 90.0, 90.0, 90.0};
 MotionParams motionConfigs[9] = {
   {0.0, 0.0, 0.0, 0.0},                              // Index 0 (unused)
   {1500.0, 40.0, 70.0, 0.8},                         // MODE_1_BREATHING
-  {2000.0, 20.0, 140.0, 0.3},                        // MODE_2_COCOON
+  {1500.0, 60.0, 60.0, 0.0},                         // MODE_2_SWEEP
   {2400.0, 80.0, 40.0, 400.0},                       // MODE_3_CONFLICT (speed=2400ms period, amplitude=80deg range, centerOffset=40deg closed, phaseOffset=400ms delay)
   {450.0, 90.0, 45.0, 1.5},                          // MODE_4_RIPPLE
   {1000.0, 6.0, 90.0, 1.5},                          // MODE_5_SHIVER (speed=freq multiplier, amplitude=wiggle degrees, centerOffset=base pos, phaseOffset=variance)
@@ -34,11 +34,11 @@ void calculateTargets(unsigned long time) {
       break;
     }
       
-    case MODE_2_COCOON: {
+    case MODE_2_SWEEP: {
+      float angle = (2.0 * M_PI * (float)time) / params.speed;
+      float breath = (sin(angle) + 1.0) / 2.0;
       for (int i = 0; i < 4; i++) {
-        float phaseOffset = i * params.phaseOffset;
-        float microBreath = (sin((time / params.speed) - phaseOffset) + 1.0) / 2.0;
-        targetPos[i] = params.centerOffset + (microBreath * params.amplitude);
+        targetPos[i] = params.centerOffset + (breath * params.amplitude);
       }
       break;
     }

@@ -13,7 +13,7 @@ MotionParams motionConfigs[9] = {
   {2000.0, 20.0, 140.0, 0.3},                        // MODE_2_COCOON
   {3000.0, 60.0, 20.0, 2.0},                         // MODE_3_CONFLICT
   {450.0, 90.0, 45.0, 1.5},                          // MODE_4_RIPPLE
-  {1000.0, 9.0, 90.0, 1.0},                          // MODE_5_SHIVER (amplitude=9.0 degrees peak, speed=1000.0 scale)
+  {1000.0, 6.0, 90.0, 1.5},                          // MODE_5_SHIVER (speed=freq multiplier, amplitude=wiggle degrees, centerOffset=base pos, phaseOffset=variance)
   {2400.0, 60.0, 60.0, 400.0},                       // MODE_6_ROLL (speed=2400ms period, phaseOffset=400ms delay)
   {800.0, 180.0, 0.0, 200.0},                        // MODE_7_STADIUM_WAVE (speed=800ms swing S, amplitude=180 max, centerOffset=0 min, phaseOffset=200ms delay d)
   {0.0, 0.0, 90.0, 0.0}                              // MODE_8_SLEEP (centerOffset=90.0)
@@ -62,25 +62,18 @@ void calculateTargets(unsigned long time) {
     }
       
     case MODE_5_SHIVER: {
-      float speedFactor = params.speed / 1000.0;
-      if (speedFactor <= 0.01) speedFactor = 1.0;
+      float speedMult = params.speed / 1000.0;
+      if (speedMult <= 0.01) speedMult = 1.0;
       
       for (int i = 0; i < 4; i++) {
-        // Slow, independent posture drift
-        float slowDrift = sin(time / ((3000.0 - i * 400.0) * speedFactor)) * 6.0 * params.phaseOffset;
+        // High frequency waves shifted by phaseOffset for each wing
+        float w1 = (time * speedMult * 0.05) + (i * params.phaseOffset * 7.3);
+        float w2 = (time * speedMult * 0.12) + (i * params.phaseOffset * 13.7);
+        float w3 = (time * speedMult * 0.23) + (i * params.phaseOffset * 19.1);
         
-        // Unique high-frequency tremor wave combinations for each wing
-        float t1 = time / ((12.0 + i * 3.5) * speedFactor);
-        float t2 = time / ((7.0 + i * 1.8) * speedFactor);
-        float jitter = (sin(t1) * 6.0) + (cos(t2) * 3.0);
+        float jitter = (sin(w1) * 0.5) + (cos(w2) * 0.3) + (sin(w3) * 0.2);
         
-        // Decentralized envelope
-        float envSin = sin(time / ((800.0 + i * 250.0) * speedFactor));
-        float envCos = cos(time / ((1800.0 + i * 350.0) * speedFactor));
-        float envelope = sq((envSin * envCos + 1.0) / 2.0);
-        
-        // Scale the shivering effect using params.amplitude
-        targetPos[i] = params.centerOffset + slowDrift + (jitter * envelope * (params.amplitude / 9.0));
+        targetPos[i] = params.centerOffset + (jitter * params.amplitude);
       }
       break;
     }

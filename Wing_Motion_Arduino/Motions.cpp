@@ -50,51 +50,15 @@ void calculateTargets(unsigned long time) {
       float maxVal = params.centerOffset + params.amplitude;
       float minVal = params.centerOffset;
 
-      float t = fmod((float)time, T);
-      if (t < 0) t += T;
-
-      float H = T / 2.0; 
-      float S = H / 2.0; 
+      float angle = (2.0 * M_PI * (float)time) / T;
+      float phaseAngle = (d / T) * 2.0 * M_PI;
 
       for (int i = 0; i < 4; i++) {
         float breath = 0.0;
-
-        if (i == 0 || i == 3) { // Outer wings
-          if (t < H) {
-            if (t < S) {
-              float progress = t / S;
-              breath = 1.0 - (1.0 - cos(progress * M_PI)) / 2.0;
-            } else {
-              breath = 0.0;
-            }
-          } else {
-            if (t < H + d) {
-              breath = 0.0;
-            } else if (t < H + d + S) {
-              float progress = (t - (H + d)) / S;
-              breath = (1.0 - cos(progress * M_PI)) / 2.0;
-            } else {
-              breath = 1.0;
-            }
-          }
-        } else { // Inner wings (1 and 2)
-          if (t < H) {
-            if (t < d) {
-              breath = 1.0;
-            } else if (t < d + S) {
-              float progress = (t - d) / S;
-              breath = 1.0 - (1.0 - cos(progress * M_PI)) / 2.0;
-            } else {
-              breath = 0.0;
-            }
-          } else {
-            if (t < H + S) {
-              float progress = (t - H) / S;
-              breath = (1.0 - cos(progress * M_PI)) / 2.0;
-            } else {
-              breath = 1.0;
-            }
-          }
+        if (i == 0 || i == 3) {
+          breath = (cos(angle) + 1.0) / 2.0;
+        } else {
+          breath = (cos(angle - phaseAngle) + 1.0) / 2.0;
         }
 
         // Apply mirroring: left side (0, 1) and right side (2, 3) move in opposite directions

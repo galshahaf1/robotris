@@ -1,4 +1,5 @@
 #include "Motions.h"
+#include <math.h>
 
 // Define the global shared variables
 Servo servos[4];
@@ -53,7 +54,7 @@ void calculateTargets(unsigned long time) {
       
     case MODE_4_RIPPLE: {
       for (int i = 0; i < 4; i++) {
-        float distFromCenter = abs(1.5 - (float)i); 
+        float distFromCenter = fabs(1.5 - (float)i); 
         float phaseOffset = distFromCenter * params.phaseOffset; 
         float wave = (sin((time / params.speed) + phaseOffset) + 1.0) / 2.0;
         targetPos[i] = params.centerOffset + (wave * params.amplitude);
@@ -109,7 +110,7 @@ void calculateTargets(unsigned long time) {
       float T = 6.0 * d + 2.0 * S + 100.0;
       if (T <= 0) T = 1000.0;
 
-      float t = fmod((double)time, T);
+      float t = fmod((float)time, T);
       if (t < 0) t += T;
 
       for (int i = 0; i < 4; i++) {

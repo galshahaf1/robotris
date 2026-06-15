@@ -12,7 +12,7 @@ MotionParams motionConfigs[9] = {
   {0.0, 0.0, 0.0, 0.0},                              // Index 0 (unused)
   {1500.0, 40.0, 70.0, 0.8},                         // MODE_1_BREATHING
   {2000.0, 20.0, 140.0, 0.3},                        // MODE_2_COCOON
-  {3000.0, 60.0, 20.0, 2.0},                         // MODE_3_CONFLICT
+  {2400.0, 80.0, 40.0, 400.0},                       // MODE_3_CONFLICT (speed=2400ms period, amplitude=80deg range, centerOffset=40deg closed, phaseOffset=400ms delay)
   {450.0, 90.0, 45.0, 1.5},                          // MODE_4_RIPPLE
   {1000.0, 6.0, 90.0, 1.5},                          // MODE_5_SHIVER (speed=freq multiplier, amplitude=wiggle degrees, centerOffset=base pos, phaseOffset=variance)
   {2400.0, 60.0, 60.0, 400.0},                       // MODE_6_ROLL (speed=2400ms period, phaseOffset=400ms delay)
@@ -44,10 +44,49 @@ void calculateTargets(unsigned long time) {
     }
       
     case MODE_3_CONFLICT: {
+      float T = params.speed;
+      if (T <= 0.01) T = 1000.0;
+      float d = params.phaseOffset;
+      float maxVal = params.centerOffset + params.amplitude;
+      float minVal = params.centerOffset;
+
+      float t = fmod((float)time, T);
+      if (t < 0) t += T;
+
+      float H = T / 2.0; 
+      float S = H / 2.0; 
+
       for (int i = 0; i < 4; i++) {
-        float phaseOffset = i * params.phaseOffset;
-        float slowOpen = (sin((time / params.speed) - phaseOffset) + 1.0) / 2.0;
-        targetPos[i] = params.centerOffset + (slowOpen * params.amplitude);
+        float dist = fabs(1.5 - (float)i) - 0.5;
+        float t_close_start, t_open_start;
+
+        if (dist > 0.5) {
+          t_close_start = 0.0;
+          t_open_start = H + d;
+        } else {
+          t_close_start = d;
+          t_open_start = H;
+        }
+
+        float t_close_end = t_close_start + S;
+        float t_open_end = t_open_start + S;
+
+        if (t >= t_close_start && t < t_close_end) {
+          float progress = (t - t_close_start) / S;
+          float ease = (1.0 - cos(progress * M_PI)) / 2.0; 
+          targetPos[i] = maxVal - ease * (maxVal - minVal);
+        }
+        else if (t >= t_close_end && t < t_open_start) {
+          targetPos[i] = minVal;
+        }
+        else if (t >= t_open_start && t < t_open_end) {
+          float progress = (t - t_open_start) / S;
+          float ease = (1.0 - cos(progress * M_PI)) / 2.0; 
+          targetPos[i] = minVal + ease * (maxVal - minVal);
+        }
+        else {
+          targetPos[i] = maxVal;
+        }
       }
       break;
     }

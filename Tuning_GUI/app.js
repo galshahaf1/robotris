@@ -4,7 +4,7 @@
 const configs = {
   1: { speed: 1500, amplitude: 40, centerOffset: 70, phaseOffset: 0.8 },
   2: { speed: 2000, amplitude: 20, centerOffset: 140, phaseOffset: 0.3 },
-  3: { speed: 3000, amplitude: 60, centerOffset: 20, phaseOffset: 2.0 },
+  3: { speed: 2400, amplitude: 80, centerOffset: 40, phaseOffset: 400.0 },
   4: { speed: 450, amplitude: 90, centerOffset: 45, phaseOffset: 1.5 },
   5: { speed: 1000, amplitude: 6, centerOffset: 90, phaseOffset: 1.5 },
   6: { speed: 2400, amplitude: 60, centerOffset: 60, phaseOffset: 400.0 },
@@ -66,13 +66,17 @@ function updateSlidersUI(mode) {
   if (!cfg) return;
 
   // Custom bounds/units depending on mode
-  if (mode === 6 || mode === 7) {
-    // Roll and Stadium Wave use milliseconds for phase offset
+  if (mode === 3 || mode === 6 || mode === 7) {
+    // Modes with millisecond-based phase offsets
     sliderPhase.min = 0;
     sliderPhase.max = 1000;
     sliderPhase.step = 10;
     unitPhase.textContent = "ms";
-    document.getElementById("desc-phase").textContent = "השהיית זמן במילי-שניות בין כנף לכנף (יוצרת אפקט גל זורם מצד לצד).";
+    if (mode === 3) {
+      document.getElementById("desc-phase").textContent = "השהיית זמן במילי-שניות (דיליי) בין הכנפיים החיצוניות לפנימיות.";
+    } else {
+      document.getElementById("desc-phase").textContent = "השהיית זמן במילי-שניות בין כנף לכנף (יוצרת אפקט גל זורם מצד לצד).";
+    }
   } else {
     // Normal sine modes use numeric multipliers
     sliderPhase.min = 0;

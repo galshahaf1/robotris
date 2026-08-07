@@ -16,8 +16,17 @@
         <span class="logo-icon">🤖</span>
         <h1>Robotris <span class="accent-text">Motion Tuner</span></h1>
       </div>
-      <button id="connect-btn" class="btn btn-primary">Connect Arduino</button>
+      <div class="connection-controls">
+        <select id="connection-type" class="connection-select">
+          <option value="serial">USB (Serial)</option>
+          <option value="wifi">WiFi (Network)</option>
+        </select>
+        <input type="text" id="wifi-ip" class="wifi-input" value="" placeholder="10.93.248.XX" title="Enter Arduino local IP Address">
+        <button id="connect-btn" class="btn btn-primary">Connect Arduino</button>
+      </div>
+
     </header>
+
 
     <main class="app-main">
       <div class="status-panel card">
@@ -130,7 +139,10 @@
 
       <!-- Log Terminal for verification -->
       <section class="terminal-card card">
-        <h3>Communication Logs</h3>
+        <div class="card-header">
+          <h3>Communication Logs</h3>
+          <button id="clear-log-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;">نקה מסך (Clear)</button>
+        </div>
         <div id="terminal-log" class="terminal-log">
           <div>Welcome to Robotris Motion Tuner. Connect your Arduino Uno R4 Minima via USB to begin.</div>
         </div>

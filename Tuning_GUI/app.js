@@ -42,6 +42,15 @@ const sliderAmplitude = document.getElementById("param-amplitude");
 const sliderCenter = document.getElementById("param-center");
 const sliderPhase = document.getElementById("param-phase");
 
+// Connection Type Selector elements
+const connectionType = document.getElementById("connection-type");
+const wifiIpInput = document.getElementById("wifi-ip");
+let wifiPollInterval = null;
+
+// Initialize WiFi input visibility
+wifiIpInput.style.display = "none";
+
+
 const valSpeed = document.getElementById("val-speed");
 const valAmplitude = document.getElementById("val-amplitude");
 const valCenter = document.getElementById("val-center");
@@ -50,14 +59,72 @@ const valPhase = document.getElementById("val-phase");
 const unitSpeed = document.getElementById("unit-speed");
 const unitPhase = document.getElementById("unit-phase");
 
-// Helper: Log to terminal UI
-function logToTerminal(message, type = "info") {
-  const time = new Date().toLocaleTimeString();
+// Helper: Append log to terminal UI
+function appendLogToDOM(message, type, timeStr) {
   const div = document.createElement("div");
   div.className = `log-line ${type}`;
-  div.textContent = `[${time}] ${message}`;
+  div.textContent = `[${timeStr}] ${message}`;
   terminalLog.appendChild(div);
   terminalLog.scrollTop = terminalLog.scrollHeight;
+}
+
+// Helper: Load logs from localStorage
+function loadLogsFromStorage() {
+  try {
+    const savedLogs = localStorage.getItem("robot_logs");
+    if (savedLogs) {
+      const logs = JSON.parse(savedLogs);
+      // Clear welcome message before rendering saved logs
+      terminalLog.innerHTML = "";
+      logs.forEach(logObj => {
+        appendLogToDOM(logObj.message, logObj.type, logObj.time);
+      });
+    }
+  } catch (err) {
+    console.error("Failed to load logs from localStorage:", err);
+  }
+}
+
+// Helper: Log to terminal UI, localStorage, and Python server (JSONL)
+function logToTerminal(message, type = "info") {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString();
+  const isoStr = now.toISOString();
+
+  // 1. Render to screen
+  appendLogToDOM(message, type, timeStr);
+
+  const logObject = {
+    timestamp: isoStr,
+    time: timeStr,
+    type: type,
+    message: message
+  };
+
+  // 2. Persist in LocalStorage (keep last 150 items to save space)
+  try {
+    const savedLogs = localStorage.getItem("robot_logs");
+    let logsList = savedLogs ? JSON.parse(savedLogs) : [];
+    logsList.push(logObject);
+    if (logsList.length > 150) {
+      logsList.shift();
+    }
+    localStorage.setItem("robot_logs", JSON.stringify(logsList));
+  } catch (err) {
+    console.error("Failed to write to localStorage:", err);
+  }
+
+  // 3. Send to custom Python server to write into robot_log.jsonl
+  fetch("/api/log", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(logObject)
+  }).catch(err => {
+    // Fail silently in browser console if not running via server (e.g. running offline as file://)
+    console.debug("Could not log to Python server:", err.message);
+  });
 }
 
 // Update the sliders to reflect a specific mode's configurations
@@ -163,20 +230,38 @@ function selectMode(mode) {
   });
 });
 
+// Toggle IP input visibility on connection type change
+connectionType.addEventListener("change", () => {
+  if (connectionType.value === "wifi") {
+    wifiIpInput.style.display = "inline-block";
+  } else {
+    wifiIpInput.style.display = "none";
+  }
+});
+
 // Setup Connect Button click
 connectBtn.addEventListener("click", async () => {
   if (isConnected) {
     logToTerminal("Disconnecting...");
     await window.serialConn.disconnect();
   } else {
-    logToTerminal("Requesting Serial Port connection...");
+    const type = connectionType.value;
+    const ip = wifiIpInput.value;
+    
+    if (type === "serial") {
+      logToTerminal("Requesting Serial Port connection...");
+    } else {
+      logToTerminal(`Requesting WiFi connection to ${ip}...`);
+    }
+    
     try {
-      await window.serialConn.connect();
+      await window.serialConn.connect(type, ip);
     } catch (err) {
       logToTerminal("Connection failed: " + err.message, "error");
     }
   }
 });
+
 
 
 
@@ -204,13 +289,21 @@ window.serialConn.onConnect = () => {
   statusDot.className = "dot connected";
   statusText.textContent = "Connected";
 
-  
   saveBtn.removeAttribute("disabled");
   
   if (currentSelectedMode !== 8) {
     tunerControls.classList.remove("disabled-overlay");
   }
-  logToTerminal("Connected successfully to Arduino. Syncing configurations...", "success");
+  
+  if (window.serialConn.connectionType === "wifi") {
+    logToTerminal(`Connected successfully over WiFi to ${window.serialConn.wifiIp}. Syncing configurations...`, "success");
+    // Start polling for status updates (heartbeat)
+    wifiPollInterval = setInterval(() => {
+      window.serialConn.fetchWiFiStatus();
+    }, 1500);
+  } else {
+    logToTerminal("Connected successfully to Arduino via USB. Syncing configurations...", "success");
+  }
 };
 
 window.serialConn.onDisconnect = () => {
@@ -224,6 +317,12 @@ window.serialConn.onDisconnect = () => {
   saveBtn.setAttribute("disabled", "true");
   tunerControls.classList.add("disabled-overlay");
   
+  // Clear WiFi polling if active
+  if (wifiPollInterval) {
+    clearInterval(wifiPollInterval);
+    wifiPollInterval = null;
+  }
+  
   // Remove running highlights
   document.querySelectorAll(".mode-tab").forEach(tab => {
     tab.classList.remove("running");
@@ -231,6 +330,7 @@ window.serialConn.onDisconnect = () => {
   
   logToTerminal("Connection closed.");
 };
+
 
 window.serialConn.onLineReceived = (line) => {
   // Silent logs for heartbeat/config parsing, print warnings/acks clearly
@@ -280,5 +380,20 @@ window.serialConn.onError = (err) => {
   logToTerminal(`Error: ${err.message}`, "error");
 };
 
+// Clear Log Button Click Listener
+const clearLogBtn = document.getElementById("clear-log-btn");
+if (clearLogBtn) {
+  clearLogBtn.addEventListener("click", () => {
+    // Clear screen DOM
+    terminalLog.innerHTML = "";
+    // Clear localStorage
+    try {
+      localStorage.removeItem("robot_logs");
+    } catch (e) {}
+    logToTerminal("Screen log cleared.", "info");
+  });
+}
+
 // Initial state
 selectMode(1);
+loadLogsFromStorage();

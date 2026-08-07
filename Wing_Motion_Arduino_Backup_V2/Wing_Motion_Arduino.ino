@@ -5,7 +5,7 @@
 #include <WiFiS3.h>
 #include "Credentials.h"
 
-bool lastButtonState = HIGH;  
+bool lastButtonState = HIGH; 
 unsigned long buttonPressTime = 0;
 bool isPressing = false;
 
@@ -146,14 +146,6 @@ void setup() {
   }
   
   // WiFi Setup (10s timeout)
-#if STATIC_IP_ENABLED
-  IPAddress local_IP(IP_ADDR);
-  IPAddress gateway(GATEWAY);
-  IPAddress subnet(SUBNET);
-  IPAddress dns(DNS_SERVER);
-  WiFi.config(local_IP, dns, gateway, subnet);
-#endif
-
   Serial.print("Connecting to WiFi: ");
   Serial.println(ssid);
   WiFi.begin(ssid, pass);

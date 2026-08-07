@@ -17,10 +17,12 @@ char pass[] = SECRET_PASS;
 WiFiServer server(80);
 
 void handleWiFiCommands() {
-  if (WiFi.status() != WL_CONNECTED) return;
+  if (WiFi.status() == WL_NO_MODULE) return;
   
   WiFiClient client = server.available();
   if (!client) return;
+  
+  Serial.println("\n--- WiFi Request Received ---");
   
   // Read request headers
   String request = "";
@@ -36,12 +38,18 @@ void handleWiFiCommands() {
   int firstSpace = request.indexOf(' ');
   int secondSpace = request.indexOf(' ', firstSpace + 1);
   if (firstSpace == -1 || secondSpace == -1) {
+    Serial.println("Error: Invalid HTTP Request format");
     client.stop();
     return;
   }
   
   String method = request.substring(0, firstSpace);
   String path = request.substring(firstSpace + 1, secondSpace);
+  
+  Serial.print("Method: ");
+  Serial.print(method);
+  Serial.print(" | Path: ");
+  Serial.println(path);
   
   String responseHeader = "HTTP/1.1 200 OK\r\n"
                           "Content-Type: text/plain\r\n"
@@ -115,6 +123,7 @@ void handleWiFiCommands() {
   client.print(responseHeader);
   client.print(responseBody);
   client.stop();
+  Serial.println("Response sent successfully.");
 }
 
 void setup() {
@@ -145,30 +154,22 @@ void setup() {
     Serial.println("Initialized default configurations in EEPROM.");
   }
   
-  // WiFi Setup (10s timeout)
-#if STATIC_IP_ENABLED
-  IPAddress local_IP(IP_ADDR);
-  IPAddress gateway(GATEWAY);
-  IPAddress subnet(SUBNET);
-  IPAddress dns(DNS_SERVER);
-  WiFi.config(local_IP, dns, gateway, subnet);
-#endif
-
-  Serial.print("Connecting to WiFi: ");
+  // WiFi Setup - AP Mode (Access Point)
+  Serial.print("Creating Access Point: ");
   Serial.println(ssid);
-  WiFi.begin(ssid, pass);
-  unsigned long startAttempt = millis();
-  while (WiFi.status() != WL_CONNECTED && millis() - startAttempt < 10000) {
-    delay(500);
-    Serial.print(".");
-  }
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("\nWiFi Connected!");
-    Serial.print("IP Address: ");
-    Serial.println(WiFi.localIP());
+  
+  // Start the Access Point (always assigns 192.168.4.1 by default)
+  int ap_status = WiFi.beginAP(ssid, pass);
+  
+  if (ap_status == WL_AP_LISTENING) {
+    Serial.println("Access Point Created successfully!");
+    Serial.print("Connect your PC to WiFi network: ");
+    Serial.println(ssid);
+    Serial.print("Arduino IP Address: ");
+    Serial.println(WiFi.localIP()); // Will print 192.168.4.1
     server.begin();
   } else {
-    Serial.println("\nWiFi Connection timed out. Running in Offline/Serial mode.");
+    Serial.println("Creating Access Point failed. Running in Offline/Serial mode.");
   }
   
   Serial.println("System Started. Mode: 1 (Breathing)");

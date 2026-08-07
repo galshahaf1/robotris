@@ -67,3 +67,24 @@ It leverages the **Web Serial API** allowing Chrome, Edge, and Opera browsers to
 2. Click **Connect Arduino** and select the Serial port of your Arduino Uno R4.
 3. Once connected, the interface automatically loads current values from the Arduino.
 4. Drag the sliders to tune the motion speed, amplitude, offset, and phase differences. The robot moves immediately in response to the changes.
+
+---
+
+## Physical Hardware Configuration
+
+* **Servos**: 4x DS3218 MG Digital Servos (Metal Gear, High Torque)
+  * **Operating Voltage**: 4.8V – 6.8V DC
+  * **Stall Current (at 5V)**: ~1.8A – 2.0A per servo
+  * **No-load Current**: ~80mA – 100mA
+  * **Spline**: 25T
+  * **Wiring Pinout**:
+    * **Brown / Black**: Ground (`-`)
+    * **Red**: Power (`V+` / `+`)
+    * **Orange / Yellow / White**: PWM Signal (`s`)
+* **Servo Driver**: PCA9685 16-Channel 12-bit PWM I2C Driver
+  * **I2C Address**: `0x40` (default)
+  * **Logic Voltage (VCC)**: 5V (from Arduino 5V pin)
+  * **Motor Power (V+)**: External DC power supply connected to the green screw terminal (recommended: 5V - 6V, minimum 5A to support multiple DS3218 MG servos under load).
+  * **Side Control Header V+ Pin**: Left disconnected (not connected to anything).
+
+

@@ -58,6 +58,60 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
+.connection-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.connection-select {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.connection-select:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.connection-select option {
+  background: var(--bg-color);
+  color: var(--text-main);
+}
+
+.wifi-input {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+  font-family: monospace;
+  font-size: 0.9rem;
+  width: 140px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.wifi-input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.wifi-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+
 .logo-area {
   display: flex;
   align-items: center;
@@ -397,4 +451,11 @@ h1 {
 
 .instructions-list strong {
   color: var(--accent-color);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }

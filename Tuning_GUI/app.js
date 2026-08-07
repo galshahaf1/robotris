@@ -9,7 +9,8 @@ const configs = {
   5: { speed: 1000, amplitude: 6, centerOffset: 90, phaseOffset: 1.5 },
   6: { speed: 2400, amplitude: 60, centerOffset: 60, phaseOffset: 400.0 },
   7: { speed: 800, amplitude: 180, centerOffset: 0, phaseOffset: 200.0 },
-  8: { speed: 1000, amplitude: 0, centerOffset: 90, phaseOffset: 0.0 }
+  8: { speed: 1000, amplitude: 0, centerOffset: 90, phaseOffset: 0.0 },
+  9: { speed: 800, amplitude: 180, centerOffset: 0, phaseOffset: 200.0 }
 };
 
 const modeNames = {
@@ -20,7 +21,8 @@ const modeNames = {
   5: "Shiver (Tremor)",
   6: "Roll (One-way Wave)",
   7: "Stadium Wave (Wave)",
-  8: "Sleep (Rest)"
+  8: "Sleep (Rest)",
+  9: "One Time (Single Wave)"
 };
 
 let currentSelectedMode = 1;
@@ -133,7 +135,7 @@ function updateSlidersUI(mode) {
   if (!cfg) return;
 
   // Custom bounds/units depending on mode
-  if (mode === 3 || mode === 6 || mode === 7) {
+  if (mode === 3 || mode === 6 || mode === 7 || mode === 9) {
     // Modes with millisecond-based phase offsets
     sliderPhase.min = 0;
     sliderPhase.max = 1000;
@@ -178,6 +180,7 @@ function updateSlidersUI(mode) {
 // Collect values from sliders and send to Arduino (Throttled)
 function sendCurrentParams() {
   if (!isConnected) return;
+  if (currentSelectedMode === 9) return;
 
   const mode = currentSelectedMode;
   const speed = parseFloat(sliderSpeed.value);
@@ -216,6 +219,9 @@ function selectMode(mode) {
   if (isConnected) {
     // Command Arduino to switch to this mode immediately on selection
     window.serialConn.sendCommand(`MODE:${mode}`);
+    if (mode === 9) {
+      window.serialConn.sendCommand("TRIGGER");
+    }
   }
 }
 

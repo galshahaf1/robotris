@@ -21,7 +21,8 @@ enum SystemState {
   MODE_5_SHIVER = 5,
   MODE_6_ROLL = 6,
   MODE_7_STADIUM_WAVE = 7,
-  MODE_8_SLEEP = 8
+  MODE_8_SLEEP = 8,
+  MODE_9_ONETIME = 9
 };
 
 // --- Motion Parameters Structure ---
@@ -35,9 +36,16 @@ struct MotionParams {
 // --- Global Shared Variables (Declared as extern) ---
 extern Servo servos[8];
 extern SystemState currentState;
+extern SystemState previousState; // Store the mode prior to one‑time wave
 extern float currentPos[8];
 extern float targetPos[8];
-extern MotionParams motionConfigs[9]; // Indices 1-8 correspond to SystemState values
+extern MotionParams motionConfigs[10]; // Indices 1-9 correspond to SystemState values
+extern unsigned long motionStartTime;
+
+// Stateful One-Time Wave angles
+extern float waveStartAngle;
+extern float waveEndAngle;
+extern float currentOnetimeEndAngle;
 
 #endif // CONFIG_H
 

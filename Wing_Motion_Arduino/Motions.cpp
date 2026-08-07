@@ -4,11 +4,17 @@
 // Define the global shared variables
 Servo servos[8];
 SystemState currentState = MODE_1_BREATHING;
+SystemState previousState = MODE_1_BREATHING; // fallback
 float currentPos[8] = {90.0, 90.0, 90.0, 90.0, 90.0, 90.0, 90.0, 90.0};
 float targetPos[8]  = {90.0, 90.0, 90.0, 90.0, 90.0, 90.0, 90.0, 90.0};
+unsigned long motionStartTime = 0;
+
+float waveStartAngle = 90.0;
+float waveEndAngle = 180.0;
+float currentOnetimeEndAngle = 90.0; // Initial reset state is 90
 
 // Initialize the motion configurations with their default values
-MotionParams motionConfigs[9] = {
+MotionParams motionConfigs[10] = {
   {0.0, 0.0, 0.0, 0.0},                              // Index 0 (unused)
   {1500.0, 40.0, 70.0, 0.8},                         // MODE_1_BREATHING
   {1500.0, 60.0, 60.0, 0.0},                         // MODE_2_SWEEP
@@ -17,7 +23,8 @@ MotionParams motionConfigs[9] = {
   {1000.0, 6.0, 90.0, 1.5},                          // MODE_5_SHIVER (speed=freq multiplier, amplitude=wiggle degrees, centerOffset=base pos, phaseOffset=variance)
   {2400.0, 60.0, 60.0, 400.0},                       // MODE_6_ROLL (speed=2400ms period, phaseOffset=400ms delay)
   {800.0, 180.0, 0.0, 200.0},                        // MODE_7_STADIUM_WAVE (speed=800ms swing S, amplitude=180 max, centerOffset=0 min, phaseOffset=200ms delay d)
-  {0.0, 0.0, 90.0, 0.0}                              // MODE_8_SLEEP (centerOffset=90.0)
+  {0.0, 0.0, 90.0, 0.0},                             // MODE_8_SLEEP (centerOffset=90.0)
+  {800.0, 180.0, 0.0, 200.0}                         // MODE_9_ONETIME (speed=800ms S, amplitude=180 max, centerOffset=0 min, phaseOffset=200ms d)
 };
 
 void calculateTargets(unsigned long time) {
@@ -161,6 +168,32 @@ void calculateTargets(unsigned long time) {
       }
       break;
     }
+
+    case MODE_9_ONETIME: {
+      float S = params.speed;
+      float d = params.phaseOffset;
+      unsigned long elapsed = time - motionStartTime;
+      float totalDuration = S + (7.0 * d);
+      
+      if (elapsed <= totalDuration) {
+        for (int i = 0; i < 8; i++) {
+          float startTime = i * d;
+          if (elapsed < startTime) {
+            targetPos[i] = 90.0;
+          } else if (elapsed < startTime + S) {
+            float progress = (float)(elapsed - startTime) / S;
+            targetPos[i] = 90.0 + progress * (waveEndAngle - 90.0);
+          } else {
+            targetPos[i] = waveEndAngle;
+          }
+        }
+      } else {
+        for (int i = 0; i < 8; i++) targetPos[i] = waveEndAngle;
+        currentState = previousState;
+        motionStartTime = 0;
+      }
+      break;
+    }
   }
 }
 
@@ -174,5 +207,27 @@ void moveServosSmoothly() {
     int microSec = 500 + (currentPos[i] * (2000.0 / 180.0));
     servos[i].writeMicroseconds(microSec);
   }
+}
+
+void triggerOnetimeWave() {
+  if (currentOnetimeEndAngle == 90.0) {
+    // First run: from 90 to 180
+    waveStartAngle = 90.0;
+    waveEndAngle = 180.0;
+    currentOnetimeEndAngle = 180.0;
+  }
+  else if (currentOnetimeEndAngle == 180.0) {
+    // Second run: from 180 to 0
+    waveStartAngle = 180.0;
+    waveEndAngle = 0.0;
+    currentOnetimeEndAngle = 0.0;
+  }
+  else if (currentOnetimeEndAngle == 0.0) {
+    // Third run: from 0 to 180
+    waveStartAngle = 0.0;
+    waveEndAngle = 180.0;
+    currentOnetimeEndAngle = 180.0;
+  }
+  motionStartTime = millis();
 }
 

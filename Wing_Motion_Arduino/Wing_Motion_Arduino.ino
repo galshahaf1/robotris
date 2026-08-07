@@ -50,7 +50,7 @@ void handleWiFiCommands() {
   String responseBody = "";
   
   if (path == "/configs") {
-    for (int i = 1; i <= 8; i++) {
+    for (int i = 1; i <= 9; i++) {
       responseBody += "CFG:" + String(i) + ":" + 
                       String(motionConfigs[i].speed, 2) + ":" + 
                       String(motionConfigs[i].amplitude, 2) + ":" + 
@@ -75,7 +75,7 @@ void handleWiFiCommands() {
     if (offsetIdx != -1) centerOffset = path.substring(offsetIdx + 7).toFloat();
     if (phaseIdx != -1) phaseOffset = path.substring(phaseIdx + 6).toFloat();
     
-    if (mode >= 1 && mode <= 8) {
+    if (mode >= 1 && mode <= 9) {
       motionConfigs[mode].speed = speed;
       motionConfigs[mode].amplitude = amplitude;
       motionConfigs[mode].centerOffset = centerOffset;
@@ -91,17 +91,29 @@ void handleWiFiCommands() {
     int valIdx = path.indexOf("val=");
     if (valIdx != -1) {
       int val = path.substring(valIdx + 4).toInt();
-      if (val >= 1 && val <= 8) {
+      if (val >= 1 && val <= 9) {
+        if (val == 9) {
+          // Store previous mode before entering one-time wave
+          previousState = currentState;
+          if (currentState != MODE_9_ONETIME) {
+            currentOnetimeEndAngle = 90.0;
+          }
+          triggerOnetimeWave();
+        }
         currentState = (SystemState)val;
         responseBody = "ACK:MODE:" + String(val) + "\n";
       }
     }
   } 
+  else if (path == "/trigger") {
+    triggerOnetimeWave();
+    responseBody = "ACK:TRIGGER\n";
+  }
   else if (path.startsWith("/save")) {
     int modeIdx = path.indexOf("mode=");
     if (modeIdx != -1) {
       int mode = path.substring(modeIdx + 5).toInt();
-      if (mode >= 1 && mode <= 8) {
+      if (mode >= 1 && mode <= 9) {
         int addr = 1 + (mode - 1) * sizeof(MotionParams);
         EEPROM.put(addr, motionConfigs[mode]);
         responseBody = "ACK:SAVE:" + String(mode) + "\n";
@@ -130,14 +142,14 @@ void setup() {
   
   // Read/Initialize configurations from EEPROM
   if (EEPROM.read(0) == EEPROM_MAGIC) {
-    for (int i = 1; i <= 8; i++) {
+    for (int i = 1; i <= 9; i++) {
       int addr = 1 + (i - 1) * sizeof(MotionParams);
       EEPROM.get(addr, motionConfigs[i]);
     }
     Serial.println("Loaded configurations from EEPROM.");
   } else {
     // Write defaults to EEPROM
-    for (int i = 1; i <= 8; i++) {
+    for (int i = 1; i <= 9; i++) {
       int addr = 1 + (i - 1) * sizeof(MotionParams);
       EEPROM.put(addr, motionConfigs[i]);
     }
@@ -201,7 +213,7 @@ void loop() {
     } else if (pressDuration > 50) { 
       if (currentState == MODE_8_SLEEP) {
         currentState = MODE_1_BREATHING; 
-      } else {
+      } else if (currentState != MODE_9_ONETIME) { 
         int nextState = (int)currentState + 1;
         if (nextState > 7) nextState = 1; 
         currentState = (SystemState)nextState;

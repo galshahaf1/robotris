@@ -1,4 +1,5 @@
 #include "SerialHandler.h"
+#include "Motions.h"
 #include <EEPROM.h>
 
 void handleSerialCommands() {
@@ -23,7 +24,7 @@ void handleSerialCommands() {
         float centerOffset = command.substring(fourthColon + 1, fifthColon).toFloat();
         float phaseOffset = command.substring(fifthColon + 1).toFloat();
         
-        if (mode >= 1 && mode <= 8) {
+        if (mode >= 1 && mode <= 9) {
           motionConfigs[mode].speed = speed;
           motionConfigs[mode].amplitude = amplitude;
           motionConfigs[mode].centerOffset = centerOffset;
@@ -52,7 +53,13 @@ void handleSerialCommands() {
       int colon = command.indexOf(':');
       if (colon != -1) {
         int mode = command.substring(colon + 1).toInt();
-        if (mode >= 1 && mode <= 8) {
+        if (mode >= 1 && mode <= 9) {
+          if (mode == 9) {
+            if (currentState != MODE_9_ONETIME) {
+              currentOnetimeEndAngle = 90.0;
+            }
+            triggerOnetimeWave();
+          }
           currentState = (SystemState)mode;
           Serial.print("ACK:MODE:");
           Serial.println(mode);
@@ -67,7 +74,7 @@ void handleSerialCommands() {
       int colon = command.indexOf(':');
       if (colon != -1) {
         int mode = command.substring(colon + 1).toInt();
-        if (mode >= 1 && mode <= 8) {
+        if (mode >= 1 && mode <= 9) {
           int addr = 1 + (mode - 1) * sizeof(MotionParams);
           EEPROM.put(addr, motionConfigs[mode]);
           
@@ -80,7 +87,7 @@ void handleSerialCommands() {
     }
     else if (command.equals("GET_CONFIGS")) {
       // Send current configs to GUI
-      for (int i = 1; i <= 8; i++) {
+      for (int i = 1; i <= 9; i++) {
         Serial.print("CFG:");
         Serial.print(i);
         Serial.print(":");

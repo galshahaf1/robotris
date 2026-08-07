@@ -9,4 +9,7 @@ void calculateTargets(unsigned long time);
 // Move the servos towards target angles smoothly using easing
 void moveServosSmoothly();
 
+// Initialize or toggle the one-time wave direction
+void triggerOnetimeWave();
+
 #endif // MOTIONS_H
